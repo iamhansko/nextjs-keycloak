@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import AuthProvider from "@/utils/AuthProvider";
+import AuthProvider from "@/components/AuthProvider";
+import SigninButton from "@/components/SigninButton";
 import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "NextAuth",
-  description: "Next.js + NextAuth.js",
+  title: "Keycloak",
+  description: "Next.js + NextAuth.js + Keycloak",
 };
 
 export default function RootLayout({
@@ -22,8 +23,7 @@ export default function RootLayout({
         <AuthProvider>
           <main className="layout">
             <ul className="navbar">
-              <li><Link href="/api/auth/signin">Sign In</Link></li>
-              <li><Link href="/api/auth/signout?callbackUrl=/">Sign Out</Link></li>
+              <SigninButton />
               <li><Link href="/">Landnig Page</Link></li>
               <li><Link href="/client">User Page - Client Component</Link></li>
               <li><Link href="/server">User Page - Server Component</Link></li>

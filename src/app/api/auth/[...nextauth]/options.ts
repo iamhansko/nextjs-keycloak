@@ -1,3 +1,5 @@
+import refreshToken from "@/utils/refreshTokenRotation";
+import { jwtDecode } from "jwt-decode";
 import type { AuthOptions } from "next-auth"
 import KeycloakProvider from "next-auth/providers/keycloak";
 
@@ -10,16 +12,27 @@ export const authOptions: AuthOptions = {
     })
   ],
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) token.role = user.role
-      // if (user) token.role = 'admin'
-      // if (user) token.role = 'partner'
-      return token
+    async jwt({ token, account }) {
+      const now = Math.floor(Date.now() / 1000);
+      // Following Data will be Encrypted
+      if (account) {
+        token.decoded = jwtDecode(account.access_token as string);
+        token.access_token = account.access_token as string;
+        token.id_token = account.id_token as string;
+        token.expires_at = account.expires_at as number;
+        token.refresh_token = account.refresh_token as string;
+        token.roles = token.decoded.realm_access.roles as string[];
+        return token
+      } else if (now < token.expires_at) {
+        return token;
+      } else {
+        const newToken = await refreshToken(token);
+        return newToken;
+      }
     },
     async session({ session, token }) {
-      if (session?.user) session.user.role = token.role
-      // if (session?.user) session.user.role = 'admin'
-      // if (session?.user) session.user.role = 'partner'
+      // Following Data will "not" be Encrypted
+      if (session?.user) session.user.roles = token.decoded.realm_access.roles;
       return session
     }
   }

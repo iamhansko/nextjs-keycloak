@@ -4,14 +4,14 @@ import { NextResponse } from "next/server";
 export default withAuth(
   function middleware(request: NextRequestWithAuth) {
     if (request.nextUrl.pathname.startsWith("/partner")
-      && request.nextauth.token?.role !== "partner"
-      && request.nextauth.token?.role !== "admin") {
+      && (request.nextauth.token?.roles as string[]).indexOf("partner")<0
+      && (request.nextauth.token?.roles as string[]).indexOf("admin")<0) {
       return NextResponse.rewrite(
         new URL("/blocked", request.url)
       )
     }
     if (request.nextUrl.pathname.startsWith("/admin")
-      && request.nextauth.token?.role !== "admin") {
+      && (request.nextauth.token?.roles as string[]).indexOf("admin")<0) {
       return NextResponse.rewrite(
         new URL("/blocked", request.url)
       )
