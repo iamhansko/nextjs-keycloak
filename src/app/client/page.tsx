@@ -1,7 +1,7 @@
 'use client';
 
 // import styles from "./page.module.css";
-import { useSession } from "next-auth/react";
+import { /* signIn, */ useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 import type { User } from "next-auth"
 
@@ -9,6 +9,7 @@ export default function Client() {
   const { data: session } = useSession({
     required: true,
     onUnauthenticated() {
+      // signIn("keycloak", { callbackUrl: '/client' });
       redirect('/api/auth/signin?callbackUrl=/client');
     }
   });
